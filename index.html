@@ -39,6 +39,18 @@
         window.location = window.location.pathname
       })
 
+      getFollowerList = function() {
+        Twitch.api({method: 'channel'}, function(error, channel) {
+          $.get('https://api.twitch.tv/kraken/channels/' + channel.name + '/follows?limit=1', function(data) {
+            console.log("Get request: " + data.follows[0].user.name);
+            return data.follows[0].user.name;
+          });
+        });
+      }
+
+      var followers = getFollowerList();
+      console.log(followers)
+
       $('#get-name button').click(function() {
         Twitch.api({method: 'user'}, function(error, user) {
           $('#get-name input').val(user.display_name);
@@ -57,28 +69,12 @@
         });
       })
 
-      function httpGet(theUrl) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-        xmlHttp.send( null );
-        return xmlHttp.responseText;
-      }
-
-      function httpGetAsync(theUrl, callback) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-          if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
-          }
-        xmlHttp.open("GET", theUrl, true); // true for asynchronous
-        xmlHttp.send(null);
-      }
-
-      var followers = httpGet('https://api.twitch.tv/kraken/channels/hitchhikerr/follows?limit=1');
-
-      console.log(followers);
-
-      console.log(followers['follows'][0]['user']['name']);
+      $('#get-follower-list button').click(function() {
+        Twitch.api({method: 'channel'}, function(error, channel) {
+          console.log(followers);
+          $('#get-follower-list input').val(followers);
+        });
+      })
 
     });
   </script>
@@ -112,6 +108,9 @@
       <input readonly="readonly" value="Unkown"/>
     </div>
 
+    <div id="get-follower-list">
+      <button>Get Follower List</button>
+      <input readonly="readonly" value="Unkown"/>
   </div>
 <!-- <script src="controller.js"></script> -->
 </body>
